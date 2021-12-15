@@ -1,6 +1,6 @@
 name: Simulate Ci
 
-on: [repository_dispatch]
+on: [push, pull_request]
 
 jobs:
   build:
