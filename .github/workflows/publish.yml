@@ -15,6 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: anatawa12/something-releaser@v2
+      - run: set-git-user anatawa12-bot
 
       - name: update version name
         id: update
