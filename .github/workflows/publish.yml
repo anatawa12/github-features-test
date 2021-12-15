@@ -1,0 +1,74 @@
+name: Simulate Publish
+
+on:
+  workflow_dispatch: {}
+
+env:
+  RELEASER_CHANGER: 'gradle-properties'
+
+jobs:
+  setup:
+    name: Update version name
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.update.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: anatawa12/something-releaser@v2
+
+      - name: update version name
+        id: update
+        run: |-
+          set-git-user anatawa12-bot
+          # update version name
+          VERSION="$(get-version)"
+          if ! [[ "$VERSION" = *-SNAPSHOT ]]; then
+            echo 'VERSION IS NOT SNAPSHOT' >&2
+            exit 1
+          fi
+          VERSION="$(version-unsnapshot "$VERSION")"
+          echo "::set-output name=version::$VERSION"
+          set-version "$VERSION"
+          generate-changelog -v "$VERSION" --date-for-unreleased
+          # commit & tag
+          git add .
+          git commit -m "v$VERSION"
+          git branch releasing
+          git push -u origin releasing
+  # multiple build & publish here
+
+  publish:
+    name: Simulate Publish
+    environment: deployment
+    runs-on: ubuntu-latest
+    needs: [setup]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: 'releasing'
+          fetch-epth: 2
+          token: "${{ secrets.ACTIONS_PAT }}"
+
+      # tools
+      - uses: anatawa12/something-releaser@v2
+
+      - name: Push tag
+        env:
+          VERSION: ${{ needs.setup.outputs.version }}
+        run: |-
+          # set tag and publish current version
+          git tag $VERSION
+          git push && git push --tags
+          # create master and push
+          git switch -c master
+          git fetch origin master --depth=1
+          git push -u origin master
+      - name: Update To Next Version
+        run: |
+          VERSION="$(get-version)"
+          VERSION="$(version-next "$VERSION")"
+          set-version "$(version-snapshot "$VERSION")"
+          git add .
+          git commit -m "prepare for next version: $VERSION"
+          git push
+          git push --delete origin releasing
