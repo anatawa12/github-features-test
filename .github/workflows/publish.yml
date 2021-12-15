@@ -4,7 +4,7 @@ on:
   workflow_dispatch: {}
 
 env:
-  RELEASER_CHANGER: 'gradle-properties'
+  RELEASER_CHANGER: 'gradle-properties@version.properties'
 
 jobs:
   setup:
