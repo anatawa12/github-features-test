@@ -1,0 +1,13 @@
+name: Simulate Ci
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Simulate Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Simulate Build
+        run: |
+          sleep 60
