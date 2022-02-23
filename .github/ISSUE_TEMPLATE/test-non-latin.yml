@@ -1,5 +1,5 @@
 name: non latain
-description: ラテン文字を持たないcheckboxのみのissue
+description: ラテン文字を持たないcheckboxをもつissue
 labels: []
 body:
 
@@ -10,3 +10,8 @@ body:
       options:
         - label: ラテン文字を持たないチェックボックス
           required: true
+
+  - type: textarea
+    attributes:
+      label: body
+      description: ラテン文字なissue
