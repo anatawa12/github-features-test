@@ -1,0 +1,12 @@
+name: non latain
+description: ラテン文字を持たないcheckboxのみのissue
+labels: []
+body:
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Before submitting a bug, please make sure following checks.
+      options:
+        - label: ラテン文字を持たないチェックボックス
+          required: true
